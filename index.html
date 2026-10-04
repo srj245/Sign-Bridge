@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101820">
+<meta name="description" content="SignBridge accessibility prototype: browser speech captions, a camera preview, and clearly labeled typed fallbacks. Not a full ASL translator.">
+<title>SignBridge</title>
+<style>
+:root{color-scheme:light;--ink:#101820;--muted:#52616b;--line:#d7dfe2;--accent:#0a6357;--paper:#fff;--ground:#f3f6f5}*{box-sizing:border-box}body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);padding:12px 18px;min-height:48px;font-weight:650}button:hover:not(:disabled){border-color:var(--ink)}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #2d81b5;outline-offset:3px}[hidden]{display:none!important}.wrap{max-width:880px;margin:auto;padding:32px 20px 40px}.brand{display:flex;align-items:center;gap:12px}.mark{width:42px;height:42px;border-radius:12px;background:var(--ink);color:white;display:grid;place-items:center;font-size:22px;font-weight:750}h1{font-size:clamp(28px,5vw,38px);letter-spacing:-.04em;margin:0;line-height:1.2}.scope{margin:12px 0 6px;color:var(--muted);font-size:14px}.intro{margin:0 0 24px;font-size:16px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;padding:5px;background:#e3eae7;border-radius:14px}.tabs button{border:0;background:transparent;padding:12px 8px}.tabs button[aria-selected=true]{background:var(--ink);color:white;box-shadow:0 2px 5px #10182022}.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:24px}.eyebrow{font-size:12px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}h2{font-size:24px;letter-spacing:-.03em;margin:0 0 6px}.helper{color:var(--muted);font-size:14px;margin:0 0 18px}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.primary{background:var(--accent);color:white;border-color:var(--accent)}.primary:hover:not(:disabled){background:#074c43;color:white}.status{font-size:14px;color:var(--muted);min-height:24px;margin:8px 0 18px}.status.error{color:#a52a27}.output-wrap{margin:18px 0}.output-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;font-size:13px;font-weight:650}.source{font-size:12px;font-weight:550;color:var(--muted)}.output{background:#101010;color:#fff;min-height:180px;border-radius:12px;padding:22px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:clamp(24px,4vw,34px);line-height:1.4}.output:empty:before{content:attr(data-placeholder);color:#aaa;font-size:20px}.actions{display:flex;gap:8px;margin-top:10px}.actions button{flex:1}.fallback{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}textarea{width:100%;min-height:94px;resize:vertical;padding:12px;border:1px solid #9aabae;border-radius:10px;background:white;color:var(--ink)}textarea:disabled{background:#f0f2f1}select{border:1px solid #9aabae;background:white;color:var(--ink);border-radius:8px;padding:10px;min-height:48px;max-width:100%}.preview{position:relative;background:#edf2ef;aspect-ratio:4/3;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0;display:grid;place-items:center}.preview p{padding:20px;color:var(--muted);font-size:14px;text-align:center}.preview video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);position:absolute;inset:0}.note{font-size:13px;color:var(--muted);margin:10px 0 0}.footer{font-size:12px;color:var(--muted);margin-top:22px}.footer summary{cursor:pointer;font-weight:650;min-height:30px}.footer p{margin:8px 0}.toast{font-size:13px;min-height:20px;color:var(--accent);margin:8px 0 0}@media(max-width:520px){.wrap{padding:24px 14px 32px}.panel{padding:18px 16px}.output{min-height:154px;padding:18px}.controls .primary{width:100%}.scope{font-size:12px}.intro{font-size:14px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><div class="brand"><span class="mark" aria-hidden="true">S</span><h1>SignBridge</h1></div><p class="scope">Limited fingerspelling demo - NOT a full ASL translator</p><p class="intro">A small step toward easier conversations.</p></header>
+<div class="tabs" role="tablist" aria-label="Choose a mode">
+<button id="hand-tab" role="tab" aria-selected="true" aria-controls="hand-panel">Hand to text</button>
+<button id="speech-tab" role="tab" aria-selected="false" aria-controls="speech-panel" tabindex="-1">Speech to text</button>
+</div>
+<section id="hand-panel" class="panel" role="tabpanel" aria-labelledby="hand-tab">
+<p class="eyebrow">Camera preview + typed fallback</p><h2>See your hands</h2><p class="helper">Turn on the camera to see a live preview. This build does not recognize signs or letters.</p>
+<div class="controls"><button id="camera" class="primary">Turn on camera</button></div>
+<p id="camera-status" class="status" role="status">Camera is off. Nothing is recorded.</p>
+<div class="preview"><p id="camera-placeholder">Your live camera preview appears here.<br>No sign recognition in this build.</p><video id="video" autoplay muted playsinline hidden aria-label="Live mirrored camera preview"></video></div>
+<div class="output-wrap"><div class="output-head"><span>Text output</span><span class="source" id="hand-source">No input yet</span></div><div id="hand-output" class="output" data-placeholder="Type a letter below"></div><div class="actions"><button id="hand-clear">Clear</button><button id="hand-copy">Copy</button></div><p id="hand-toast" class="toast" role="status"></p></div>
+<div class="fallback"><label for="hand-input">Typed fallback (not camera recognition)</label><textarea id="hand-input" placeholder="Type letters or a message" maxlength="10000" spellcheck="false"></textarea><p class="note">Typed text appears above exactly as entered. ASL has its own grammar; fingerspelling alone is not translation.</p></div>
+</section>
+<section id="speech-panel" class="panel" role="tabpanel" aria-labelledby="speech-tab" hidden>
+<p class="eyebrow">Browser speech captions</p><h2>Make speech visible</h2><p class="helper">Start listening, allow your microphone, then speak. Captions can be wrong. Check them before relying on them.</p>
+<div class="controls"><button id="mic" class="primary">Start listening</button><select id="language" aria-label="Speech language"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="es-ES">Spanish</option><option value="hi-IN">Hindi</option></select></div>
+<p id="speech-status" class="status" role="status">Microphone is off.</p>
+<p class="note">Before starting: your browser may send audio to its speech service. Internet access is usually required. No paid API key is needed.</p>
+<div class="output-wrap"><div class="output-head"><span>Captions / text output</span><span id="speech-source" class="source">No input yet</span></div><div id="speech-output" class="output" data-placeholder="Speak or type below"></div><div class="actions"><button id="speech-clear">Clear</button><button id="speech-copy">Copy</button></div><p id="speech-toast" class="toast" role="status"></p></div>
+<div class="fallback"><label for="speech-input">Typed fallback (not speech recognition)</label><textarea id="speech-input" placeholder="Type if your mic is unavailable" maxlength="10000"></textarea><p class="note">Starting a new listening session replaces the output. Stop listening before typing.</p></div>
+</section>
+<details class="footer"><summary>About this prototype &amp; privacy</summary><p>Speech uses your browser's recognition service, not a custom AI model. Availability depends on your browser, device, language, permissions and network. Try current Chrome on an HTTPS site.</p><p>Camera video stays in the on-page preview. This page does not record, upload, store or share camera video or captions. Your browser's speech service may process audio remotely. Clear removes text from the page; it does not delete data your browser's speech service may have processed.</p><p>Camera preview is not sign recognition. This is a limited accessibility prototype, not a full ASL translator or a replacement for an interpreter.</p></details>
+</main>
+<script>
+'use strict';
+(() => {
+ const $ = id => document.getElementById(id);
+ let stream = null, cameraPending = false, cameraToken = 0, recognition = null, listening = false, starting = false;
+ const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+ function status(id,text,error=false){$(id).textContent=text;$(id).classList.toggle('error',error);}
+ function micState(active){listening=active;starting=false;$('mic').textContent=active?'Stop listening':'Start listening';$('speech-input').disabled=active;$('language').disabled=active;}
+ function stopSpeech(abort=false){if(recognition){try{abort?recognition.abort():recognition.stop();}catch(e){}}if(abort){recognition=null;micState(false);$('mic').disabled=!Speech;} }
+ function stopCamera(){cameraToken++;cameraPending=false;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}$('video').srcObject=null;$('video').hidden=true;$('camera-placeholder').hidden=false;$('camera').disabled=false;$('camera').textContent='Turn on camera';status('camera-status','Camera is off. Nothing is recorded.');}
+ function selectTab(mode){if(mode==='hand'){stopSpeech(true);status('speech-status','Microphone is off.');}else{stopCamera();}for(const m of ['hand','speech']){const chosen=m===mode;$(m+'-tab').setAttribute('aria-selected',String(chosen));$(m+'-tab').tabIndex=chosen?0:-1;$(m+'-panel').hidden=!chosen;}}
+ ['hand','speech'].forEach(mode=>{
+  $(mode+'-tab').onclick=()=>selectTab(mode);
+  $(mode+'-tab').onkeydown=e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?'hand':e.key==='End'?'speech':mode==='hand'?'speech':'hand';selectTab(next);$(next+'-tab').focus();}};
+  $(mode+'-input').oninput=()=>{$(mode+'-output').textContent=$(mode+'-input').value;$(mode+'-source').textContent=$(mode+'-input').value?'Typed fallback':'No input yet';$(mode+'-toast').textContent='';};
+  $(mode+'-clear').onclick=()=>{if(mode==='speech'){stopSpeech(true);status('speech-status','Microphone is off.');}$(mode+'-input').value='';$(mode+'-output').textContent='';$(mode+'-source').textContent='No input yet';$(mode+'-toast').textContent='Cleared.';};
+  $(mode+'-copy').onclick=async()=>{const text=$(mode+'-output').textContent;if(!text){$(mode+'-toast').textContent='Nothing to copy yet.';return;}try{if(!navigator.clipboard)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(text);$(mode+'-toast').textContent='Copied.';}catch(e){$(mode+'-toast').textContent='Copy was blocked. Select the output text and copy it manually.';}};
+ });
+ $('camera').onclick=async()=>{
+  if(stream||cameraPending){stopCamera();return;}
+  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){status('camera-status','Camera unavailable. Open this page on HTTPS in Chrome, or use typed fallback.',true);return;}
+  const token=++cameraToken;cameraPending=true;$('camera').textContent='Cancel camera request';status('camera-status','Waiting for camera permission...');
+  try{const incoming=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});if(token!==cameraToken){incoming.getTracks().forEach(t=>t.stop());return;}stream=incoming;cameraPending=false;$('video').srcObject=stream;$('video').hidden=false;$('camera-placeholder').hidden=true;await $('video').play();if(token!==cameraToken)return;$('camera').textContent='Turn off camera';status('camera-status','Camera is on. Preview only, no sign recognition.');stream.getVideoTracks().forEach(t=>t.onended=()=>stopCamera());}
+  catch(e){if(token!==cameraToken)return;stopCamera();const message=e.name==='NotAllowedError'?'Camera permission denied. Allow camera access in site settings, or use typed fallback.':e.name==='NotFoundError'?'No camera found. Use typed fallback.':e.name==='NotReadableError'?'Camera is busy or unavailable. Close other camera apps and try again.':'Camera could not start. Try Chrome on HTTPS, or use typed fallback.';status('camera-status',message,true);}
+ };
+ if(!Speech){$('mic').disabled=true;status('speech-status','Speech recognition is not supported in this browser. Try Chrome, or use typed fallback.',true);}
+ $('mic').onclick=()=>{
+  if(listening||starting){$('mic').disabled=true;$('mic').textContent='Stopping...';stopSpeech();return;}
+  if(!Speech)return;
+  if(!window.isSecureContext){status('speech-status','Open this page on HTTPS to use the microphone. Typed fallback still works.',true);return;}
+  const r=new Speech();recognition=r;let finalText='',failed=false;starting=true;$('speech-input').disabled=true;$('language').disabled=true;$('mic').textContent='Cancel listening';status('speech-status','Waiting for microphone permission...');
+  r.lang=$('language').value;r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+  r.onstart=()=>{if(recognition!==r)return;micState(true);$('speech-output').textContent='';$('speech-source').textContent='Speech recognition';$('speech-input').value='';$('speech-toast').textContent='';status('speech-status','Listening. Speak clearly; tap Stop when done.');};
+  r.onresult=e=>{if(recognition!==r)return;let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const text=e.results[i][0].transcript;if(e.results[i].isFinal)finalText+=(finalText?' ':'')+text.trim();else interim+=text;} $('speech-output').textContent=[finalText,interim.trim()].filter(Boolean).join(' ');$('speech-source').textContent=interim?'Speech recognition (live)':'Speech recognition';};
+  r.onerror=e=>{if(recognition!==r)return;failed=true;const errors={'not-allowed':'Microphone permission denied or blocked. Allow microphone in site settings, then try again.','service-not-allowed':'Your browser blocked its speech service. Try Chrome, or use typed fallback.','audio-capture':'No usable microphone found. Check your device or use typed fallback.','network':'Speech service could not connect. Check internet access, or use typed fallback.','no-speech':'No speech was detected. Tap Start and try again.','language-not-supported':'This language is not supported here. Try another language.','aborted':'Listening canceled.'};status('speech-status',errors[e.error]||'Speech recognition failed. Try again, or use typed fallback.',e.error!=='aborted');};
+  r.onend=()=>{if(recognition!==r)return;recognition=null;micState(false);$('mic').disabled=false;if(!failed)status('speech-status','Listening ended. Tap Start to continue.');};
+  try{r.start();}catch(e){recognition=null;micState(false);status('speech-status','Could not start speech recognition. Try again, or use typed fallback.',true);}
+ };
+ function releaseDevices(){stopSpeech(true);$('mic').disabled=!Speech;stopCamera();status('speech-status','Microphone is off.');}
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseDevices();});window.addEventListener('pagehide',releaseDevices);
+})();
+</script>
+</body>
+</html>
